@@ -145,8 +145,9 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Models\DataEntry.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Services\Storage\ConcurrentStorage.h" />
     <ClInclude Include="Services\Storage\IStorageService.h" />
-    <ClInclude Include="Services\Storage\ThreadSafeStorage.h" />
+    <ClInclude Include="Services\Storage\DIY_ThreadSafeStorage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\ApplicationContext.cpp" />
@@ -156,7 +157,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Services\Storage\ThreadSafeStorage.cpp" />
+    <ClCompile Include="Services\Storage\ConcurrentStorage.cpp" />
+    <ClCompile Include="Services\Storage\DIY_ThreadSafeStorage.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

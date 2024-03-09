@@ -1,11 +1,11 @@
 ﻿#include "pch.h"
-#include "ThreadSafeStorage.h"
+#include "DIY_ThreadSafeStorage.h"
 #include "../../Models/DataEntry.h"
 
-void domain::services::ThreadSafeStorage::Store(const models::DataEntry& data)
+
+void domain::services::DIY_ThreadSafeStorage::Store(const models::DataEntry& data)
 {
 	if (data.Key.empty()) return;
-
 	{
 		std::unique_lock lock(Mu);
 		DataContainer[data.Key] = data.Value;
@@ -13,7 +13,7 @@ void domain::services::ThreadSafeStorage::Store(const models::DataEntry& data)
 
 }
 
-std::optional<domain::models::DataEntry> domain::services::ThreadSafeStorage::Find(const std::string& key)
+std::optional<domain::models::DataEntry> domain::services::DIY_ThreadSafeStorage::Find(const std::string& key)
 {
 	if (key.empty()) return std::nullopt;
 
@@ -21,10 +21,10 @@ std::optional<domain::models::DataEntry> domain::services::ThreadSafeStorage::Fi
 
 	{
 		std::shared_lock lock(Mu);
-
 		result = DataContainer.find(key);
 		if (result == end(DataContainer)) return std::nullopt;
 	}
+
 
 	return { {result->first, result->second } };
 }
