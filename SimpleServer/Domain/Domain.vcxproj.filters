@@ -24,10 +24,13 @@
     <ClInclude Include="Models\DataEntry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Services\IStorageService.h">
+    <ClInclude Include="Services\Storage\IStorageService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ApplicationContext.h">
+    <ClInclude Include="Application\ApplicationContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\Storage\ThreadSafeStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +38,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ApplicationContext.cpp">
+    <ClCompile Include="Application\ApplicationContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Services\Storage\ThreadSafeStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

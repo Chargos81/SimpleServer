@@ -3,13 +3,7 @@
 #include <optional>
 #include <string>
 
-namespace domain
-{
-	namespace models
-	{
-		class DataEntry;
-	}
-}
+#include "../Models/DataEntry.h"
 
 namespace domain
 {
