@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <unordered_map>
+#include <shared_mutex>
 
 #include "IStorageService.h"
 
@@ -15,5 +16,7 @@ namespace domain::services
 	private:
 
 		std::unordered_map<std::string, std::string> DataContainer;
+
+		std::shared_mutex Mu;
 	};
 }
