@@ -26,5 +26,11 @@
     <ClInclude Include="ServerApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Network\INetworkManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\CommandResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

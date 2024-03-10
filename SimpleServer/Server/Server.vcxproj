@@ -142,6 +142,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Network\CommandResult.h" />
+    <ClInclude Include="Network\INetworkManager.h" />
     <ClInclude Include="ServerApplication.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
