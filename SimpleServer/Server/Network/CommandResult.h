@@ -7,10 +7,12 @@ namespace server::network
 	{
 	public:
 
+		explicit CommandResult() = default;
 		explicit CommandResult(std::string key, std::string value) noexcept
 			: Key(std::move(key)),
 			  Value(std::move(value))
 		{}
+
 
 		std::string Key;
 		std::string Value;

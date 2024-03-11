@@ -4,14 +4,8 @@
 #include <string>
 
 #include "../Models/DataEntry.h"
+#include "../Services/Storage/IStorageService.h"
 
-namespace domain
-{
-	namespace services
-	{
-		class IStorageService;
-	}
-}
 
 namespace domain::application
 {

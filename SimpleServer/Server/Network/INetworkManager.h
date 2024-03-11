@@ -14,7 +14,8 @@ namespace server::network
 	public:
 
 		virtual void Initialize(ServerApplication* application) = 0;
-		virtual void Send(const CommandResult& commandResult) = 0;
+		virtual void Shutdown() = 0;
+		virtual void Send(const CommandResult& commandResult, uint32_t connectionId) = 0;
 
 		virtual ~INetworkManager() = default;
 	};
