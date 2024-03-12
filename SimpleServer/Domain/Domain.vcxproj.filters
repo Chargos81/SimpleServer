@@ -27,9 +27,6 @@
     <ClInclude Include="Services\Storage\IStorageService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Application\ApplicationContext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Services\Storage\DIY_ThreadSafeStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -39,9 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\ApplicationContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Services\Storage\DIY_ThreadSafeStorage.cpp">

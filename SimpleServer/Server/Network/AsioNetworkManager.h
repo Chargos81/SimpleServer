@@ -46,7 +46,8 @@ namespace server::network
 		std::unique_ptr<std::thread> WorkingThread;
 
 		boost::asio::io_service IOService;
-		boost::asio::ip::tcp::acceptor Acceptor;
+
+		std::unique_ptr<boost::asio::ip::tcp::acceptor> Acceptor;
 
 		ServerApplication* Application = nullptr;
 
