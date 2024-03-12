@@ -3,10 +3,10 @@
 #include <boost/asio/streambuf.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
+#include "NetworkDefines.h"
+
 namespace server::network
 {
-	using ConnectionId = uint32_t;
-
 	class CommandResult;
 
 	class TcpConnection : public std::enable_shared_from_this<TcpConnection>
@@ -28,12 +28,15 @@ namespace server::network
 
 		void Send(const std::string& messageString);
 
+		void ReadCommand(std::string_view buffer);
+		void ReadGetCommandBody(std::string_view buffer);
+		void ReadSetCommandBody(std::string_view buffer);
+
 	private:
 
 		friend class AsioNetworkManager;
 
 		boost::asio::streambuf Buffer;
-
 		boost::asio::ip::tcp::socket Socket;
 
 		ConnectionId Id;

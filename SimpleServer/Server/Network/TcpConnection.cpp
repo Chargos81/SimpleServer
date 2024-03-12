@@ -18,52 +18,7 @@ namespace
 	void ReadGetCommandBody(std::string_view buffer);
 	void ReadSetCommandBody(std::string_view buffer);
 
-	void ReadCommand(std::string_view buffer)
-	{
 
-		// Get
-		if (const auto pos = buffer.find("$get "); pos != std::string::npos)
-		{
-			ReadGetCommandBody(buffer.substr(pos + 5));
-			return;
-		}
-
-		// Set
-		if (const auto pos = buffer.find("$set "); pos != std::string::npos)
-		{
-			ReadSetCommandBody(buffer.substr(pos + 5));
-			return;
-		}
-
-		// TODO: treat the message as an invalid one
-	}
-
-	void ReadGetCommandBody(std::string_view buffer)
-	{
-		assert(size(buffer) > 0);
-		GetCommand cmd{ std::string(buffer) };
-		//...
-	}
-
-	void ReadSetCommandBody(std::string_view buffer)
-	{
-		assert(size(buffer) > 0);
-
-		if (const auto delimPos = buffer.find('='); delimPos != std::string::npos)
-		{
-			std::string Key;
-			std::string Value;
-
-			Key = buffer.substr(0, delimPos);
-			Value = buffer.substr(delimPos + 1);
-
-			SetCommand cmd(Key, Value);
-			// ...
-			return;
-		}
-
-		// TODO: treat the message as invalid one
-	}
 
 	std::string ResultToString(const CommandResult& result)
 	{
@@ -135,4 +90,51 @@ void TcpConnection::Send(const std::string& messageString)
 
 		// ... 
 	});
+}
+
+void TcpConnection::ReadCommand(std::string_view buffer)
+{
+
+	// Get
+	if (const auto pos = buffer.find("$get "); pos != std::string::npos)
+	{
+		ReadGetCommandBody(buffer.substr(pos + 5));
+		return;
+	}
+
+	// Set
+	if (const auto pos = buffer.find("$set "); pos != std::string::npos)
+	{
+		ReadSetCommandBody(buffer.substr(pos + 5));
+		return;
+	}
+
+	// TODO: treat the message as an invalid one
+}
+
+void TcpConnection::ReadGetCommandBody(std::string_view buffer)
+{
+	assert(size(buffer) > 0);
+	GetCommand cmd{ GetId(), std::string(buffer) };
+	//...
+}
+
+void TcpConnection::ReadSetCommandBody(std::string_view buffer)
+{
+	assert(size(buffer) > 0);
+
+	if (const auto delimPos = buffer.find('='); delimPos != std::string::npos)
+	{
+		std::string Key;
+		std::string Value;
+
+		Key = buffer.substr(0, delimPos);
+		Value = buffer.substr(delimPos + 1);
+
+		SetCommand cmd(GetId(), Key, Value);
+		// ...
+		return;
+	}
+
+	// TODO: treat the message as invalid one
 }

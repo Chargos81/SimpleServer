@@ -43,14 +43,14 @@ void server::network::AsioNetworkManager::OnGetCommandReceived(const GetCommand&
 {
 	assert(IsInitialized);
 
-	Application->ReceiveMessage(command);
+	Application->ProcessGetCommand(command);
 }
 
 void server::network::AsioNetworkManager::OnSetCommandReceived(const SetCommand& command) const
 {
 	assert(IsInitialized);
 
-	Application->ReceiveMessage(command);
+	Application->ProcessSetCommand(command);
 }
 
 void server::network::AsioNetworkManager::Run()

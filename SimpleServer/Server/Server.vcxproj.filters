@@ -27,9 +27,6 @@
     <ClCompile Include="Network\TcpConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WorkerPool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerApplication.h">
@@ -53,7 +50,7 @@
     <ClInclude Include="Network\SetCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorkerPool.h">
+    <ClInclude Include="Network\NetworkDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

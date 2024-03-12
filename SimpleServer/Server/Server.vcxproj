@@ -137,7 +137,6 @@
     <ClCompile Include="Network\TcpConnection.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerApplication.cpp" />
-    <ClCompile Include="WorkerPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.vcxproj">
@@ -149,10 +148,10 @@
     <ClInclude Include="Network\CommandResult.h" />
     <ClInclude Include="Network\GetCommand.h" />
     <ClInclude Include="Network\INetworkManager.h" />
+    <ClInclude Include="Network\NetworkDefines.h" />
     <ClInclude Include="Network\SetCommand.h" />
     <ClInclude Include="Network\TcpConnection.h" />
     <ClInclude Include="ServerApplication.h" />
-    <ClInclude Include="WorkerPool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
