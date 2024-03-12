@@ -3,6 +3,7 @@
 #include "boost/asio.hpp"
 
 #include "INetworkManager.h"
+#include "TcpConnection.h"
 
 namespace server::network
 {
@@ -11,7 +12,7 @@ namespace server::network
 	class TcpConnection;
 
 	/**
-	 * A simple singlethreaded async server
+	 * A simple single threaded async server
 	 * Runs in separate thread
 	 */
 	class AsioNetworkManager : public INetworkManager
@@ -21,7 +22,7 @@ namespace server::network
 		void Initialize(ServerApplication* application) override;
 		void Shutdown() override;
 
-		void Send(const CommandResult& commandResult, uint32_t connectionId) override;
+		void Send(const CommandResult& commandResult, ConnectionId connectionId) override;
 
 		void OnGetCommandReceived(const GetCommand& command) const;
 		void OnSetCommandReceived(const SetCommand& command) const;
@@ -33,16 +34,14 @@ namespace server::network
 		void StartAccept();
 		void OnAccept(const std::shared_ptr<TcpConnection>& conn);
 
-		std::shared_ptr<TcpConnection> GetConnection(uint32_t id) const;
+		std::shared_ptr<TcpConnection> GetConnection(ConnectionId id) const;
 
-		static uint32_t GenerateConnectionId();
+		static ConnectionId GenerateConnectionId();
 
 	private:
 
-		/**
-		 * Connections to their ids
-		 */
-		std::unordered_map<uint32_t, std::shared_ptr<TcpConnection>> Connections;
+
+		std::unordered_map<ConnectionId, std::shared_ptr<TcpConnection>> Connections;
 
 		std::unique_ptr<std::thread> WorkingThread;
 

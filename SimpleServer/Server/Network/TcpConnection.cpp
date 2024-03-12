@@ -1,35 +1,133 @@
 ﻿#include "TcpConnection.h"
 
-server::network::TcpConnection::TcpConnection(boost::asio::io_context& ioContext, uint32_t id):
+#include <boost/asio/read_until.hpp>
+#include <boost/asio/write.hpp>
+#include <boost/regex.hpp>
+#include <boost/asio/streambuf.hpp>
+
+#include "GetCommand.h"
+#include "SetCommand.h"
+
+using namespace boost::asio;
+
+namespace
+{
+	using namespace server::network;
+
+	void ReadGetCommandBody(std::string_view buffer);
+	void ReadSetCommandBody(std::string_view buffer);
+
+	void ReadCommand(std::string_view buffer)
+	{
+
+		// Get
+		if (const auto pos = buffer.find("$get "); pos != std::string::npos)
+		{
+			ReadGetCommandBody(buffer.substr(pos + 5));
+			return;
+		}
+
+		// Set
+		if (const auto pos = buffer.find("$set "); pos != std::string::npos)
+		{
+			ReadSetCommandBody(buffer.substr(pos + 5));
+			return;
+		}
+
+		// TODO: treat the message as an invalid one
+	}
+
+	void ReadGetCommandBody(std::string_view buffer)
+	{
+		assert(size(buffer) > 0);
+		GetCommand cmd{ std::string(buffer) };
+		//...
+	}
+
+	void ReadSetCommandBody(std::string_view buffer)
+	{
+		assert(size(buffer) > 0);
+
+		if (const auto delimPos = buffer.find("="); delimPos != std::string::npos)
+		{
+			std::string Key;
+			std::string Value;
+
+			Key = buffer.substr(0, delimPos);
+			Value = buffer.substr(delimPos + 1);
+
+			SetCommand cmd(Key, Value);
+			// ...
+			return;
+		}
+
+		// TODO: treat the message as invalid one
+	}
+
+	std::string ResultToString(const CommandResult& result)
+	{
+		// TODO
+		return {};
+	}
+}
+
+TcpConnection::TcpConnection(io_context& ioContext, ConnectionId id):
 Socket(ioContext),
 Id(id)
 {
-	constexpr size_t bufferSize = 1024;
-	Buffer.resize(bufferSize);
 }
 
-void server::network::TcpConnection::Open()
+void TcpConnection::Open()
 {
-	Socket.async_receive(boost::asio::buffer(data(Buffer), size(Buffer)), [](boost::system::error_code ec, size_t count) {});
+	const auto delimiter = '\0';
+
+	// Read until we meet the delimiter and then parse the command
+	// TODO: it would be better to move the parsing logic into a separate class
+	// TODO: read deadline
+	async_read_until(Socket, Buffer, delimiter, [&](const boost::system::error_code& ec, size_t count)
+	{
+		if (ec)
+		{
+			// TODO: handle receive errors
+			return;
+		}
+
+		std::string messageString;
+		std::istream stream(&Buffer);
+
+		stream >> messageString;
+
+		ReadCommand(std::string_view(messageString).substr(0, size(messageString) - 1));
+	});
 }
 
-void server::network::TcpConnection::Close()
+void TcpConnection::Close()
 {
+	// TODO
 }
 
-std::shared_ptr<server::network::TcpConnection> server::network::TcpConnection::Create(
-	boost::asio::io_context& io_context, uint32_t id)
+std::shared_ptr<TcpConnection> TcpConnection::Create(
+	io_context& io_context, ConnectionId id)
 {
 	return std::make_shared<TcpConnection>(io_context, id);
 }
 
-void server::network::TcpConnection::Send(const CommandResult& commandResult)
+void TcpConnection::Send(const CommandResult& commandResult)
 {
-
+	Send(ResultToString(commandResult));
 }
 
-void server::network::TcpConnection::Send(const std::string& messageString)
+void TcpConnection::Send(const std::string& messageString)
 {
+	const auto buff = buffer(data(messageString), size(messageString));
 
+	async_write(Socket, buff, size(messageString), [&](const boost::system::error_code& ec, size_t count)
+	{
+		if(ec)
+		{
+			// TODO: handle write errors
+		}
+
+		// ... 
+	});
 }
-

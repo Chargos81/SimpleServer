@@ -7,6 +7,10 @@ namespace server::network
 	{
 	public:
 
+		GetCommand() = default;
+		explicit GetCommand(std::string key) noexcept:
+		Key(std::move(key)){}
+
 		std::string Key;
 	};
 }

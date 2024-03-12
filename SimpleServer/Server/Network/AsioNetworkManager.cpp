@@ -88,16 +88,16 @@ void server::network::AsioNetworkManager::OnAccept(const std::shared_ptr<TcpConn
 	StartAccept();
 }
 
-std::shared_ptr<server::network::TcpConnection> server::network::AsioNetworkManager::GetConnection(uint32_t id) const
+std::shared_ptr<server::network::TcpConnection> server::network::AsioNetworkManager::GetConnection(ConnectionId id) const
 {
 	const auto result = Connections.find(id);
 
 	return result != end(Connections) ? result->second : nullptr;
 }
 
-uint32_t server::network::AsioNetworkManager::GenerateConnectionId()
+server::network::ConnectionId server::network::AsioNetworkManager::GenerateConnectionId()
 {
-	static uint32_t nextId = 0;
+	static ConnectionId nextId = 0;
 
 	return nextId++;
 }
