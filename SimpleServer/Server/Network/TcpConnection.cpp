@@ -5,6 +5,7 @@
 #include <boost/regex.hpp>
 #include <boost/asio/streambuf.hpp>
 
+#include "CommandResult.h"
 #include "GetCommand.h"
 #include "SetCommand.h"
 
@@ -48,7 +49,7 @@ namespace
 	{
 		assert(size(buffer) > 0);
 
-		if (const auto delimPos = buffer.find("="); delimPos != std::string::npos)
+		if (const auto delimPos = buffer.find('='); delimPos != std::string::npos)
 		{
 			std::string Key;
 			std::string Value;
@@ -66,8 +67,7 @@ namespace
 
 	std::string ResultToString(const CommandResult& result)
 	{
-		// TODO
-		return {};
+		return result.Key + '=' + result.Value;
 	}
 }
 
@@ -79,7 +79,7 @@ Id(id)
 
 void TcpConnection::Open()
 {
-	const auto delimiter = '\0';
+	constexpr auto delimiter = '\0';
 
 	// Read until we meet the delimiter and then parse the command
 	// TODO: it would be better to move the parsing logic into a separate class
@@ -119,9 +119,14 @@ void TcpConnection::Send(const CommandResult& commandResult)
 
 void TcpConnection::Send(const std::string& messageString)
 {
-	const auto buff = buffer(data(messageString), size(messageString));
+	constexpr auto delimiter = '\0';
 
-	async_write(Socket, buff, size(messageString), [&](const boost::system::error_code& ec, size_t count)
+	streambuf buff(size(messageString) + sizeof delimiter);
+	std::ostream stream(&buff);
+
+	stream << messageString << delimiter;
+
+	async_write(Socket, buff, [&](const boost::system::error_code& ec, size_t count)
 	{
 		if(ec)
 		{
