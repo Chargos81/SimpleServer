@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 
 #include "Network/GetCommand.h"
@@ -15,7 +16,7 @@ namespace server
 	/**
 	 * A coordination point of the system
 	 * Handles the command processing
-	 * TODO: data processing logic should be a part of the domain, but i put it for the sake of the simplicity
+	 * TODO: data processing logic should be a part of the domain, but i put it here for the sake of the simplicity
 	 */
 	class ServerApplication
 	{
@@ -42,7 +43,7 @@ namespace server
 		std::unique_ptr<domain::services::IStorageService> Storage;
 		std::unique_ptr<network::INetworkManager> NetworkManager;
 
-		bool IsStopRequested = false;
+		std::atomic_bool IsStopRequested = false;
 	}; 
 }
 

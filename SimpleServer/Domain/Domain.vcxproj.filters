@@ -27,10 +27,10 @@
     <ClInclude Include="Services\Storage\IStorageService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Services\Storage\DIY_ThreadSafeStorage.h">
+    <ClInclude Include="Services\Storage\ConcurrentStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Services\Storage\ConcurrentStorage.h">
+    <ClInclude Include="Services\Storage\PersistentStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +38,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Services\Storage\DIY_ThreadSafeStorage.cpp">
+    <ClCompile Include="Services\Storage\ConcurrentStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Services\Storage\ConcurrentStorage.cpp">
+    <ClCompile Include="Services\Storage\PersistentStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

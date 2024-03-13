@@ -5,9 +5,11 @@
 #include "../Domain/Services/Storage/ConcurrentStorage.h"
 #include "Network/AsioNetworkManager.h"
 
-int main()
+int main(int argc, char** argv)
 {
-	auto storage = std::make_unique<domain::services::ConcurrentStorage>();
+	auto storageFilePath = std::filesystem::path(argv[0]).parent_path() / "Data\\config.txt";
+
+	auto storage = std::make_unique<domain::services::ConcurrentStorage>(storageFilePath);
 	auto networkManager = std::make_unique<server::network::AsioNetworkManager>();
 
 	auto server = server::ServerApplication(std::move(storage), std::move(networkManager));

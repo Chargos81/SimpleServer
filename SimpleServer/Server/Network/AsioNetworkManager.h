@@ -20,7 +20,9 @@ namespace server::network
 	public:
 
 		void Initialize(ServerApplication* application) override;
-		void Shutdown() override;
+
+		void Run() override;
+		void Stop() override;
 
 		void Send(const CommandResult& commandResult, ConnectionId connectionId) override;
 
@@ -29,7 +31,7 @@ namespace server::network
 
 	private:
 
-		void Run();
+		void StartAsioServer();
 
 		void StartAccept();
 		void OnAccept(const std::shared_ptr<TcpConnection>& conn);

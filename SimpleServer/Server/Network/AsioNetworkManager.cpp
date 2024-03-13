@@ -10,7 +10,7 @@ void server::network::AsioNetworkManager::Initialize(ServerApplication* applicat
 	Application = application;
 }
 
-void server::network::AsioNetworkManager::Shutdown()
+void server::network::AsioNetworkManager::Stop()
 {
 	post(IOService, [&]
 	{
@@ -53,9 +53,8 @@ void server::network::AsioNetworkManager::OnSetCommandReceived(const SetCommand&
 	Application->ProcessSetCommand(command);
 }
 
-void server::network::AsioNetworkManager::Run()
+void server::network::AsioNetworkManager::StartAsioServer()
 {
-
 	const int32_t port = 7777;
 	const ip::address addr = ip::address::from_string("127.0.0.1");
 
@@ -63,11 +62,14 @@ void server::network::AsioNetworkManager::Run()
 
 	Acceptor = std::make_unique<ip::tcp::acceptor>(IOService, ep);
 
+	IOService.run();
+}
+
+void server::network::AsioNetworkManager::Run()
+{
 	IsInitialized = true;
 
-	WorkingThread = std::make_unique<std::thread>(&AsioNetworkManager::Run, this);
-
-	IOService.run();
+	WorkingThread = std::make_unique<std::thread>(&AsioNetworkManager::StartAsioServer, this);
 }
 
 void server::network::AsioNetworkManager::StartAccept()

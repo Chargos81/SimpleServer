@@ -1,4 +1,6 @@
 #include "ServerApplication.h"
+
+#include <iostream>
 #include <variant>
 
 #include "Models/DataEntry.h"
@@ -16,11 +18,23 @@ NetworkManager(std::move(networkManager))
 
 void server::ServerApplication::Run()
 {
-	NetworkManager->Initialize(this);
-
-	while(!IsStopRequested)
+	try
 	{
-		
+		NetworkManager->Initialize(this);
+		NetworkManager->Run();
+
+		Storage->Run();
+
+		while(!IsStopRequested)
+		{
+			// ...
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+
+		Stop();
 	}
 }
 
@@ -28,7 +42,8 @@ void server::ServerApplication::Stop()
 {
 	IsStopRequested = true;
 
-	NetworkManager->Shutdown();
+	NetworkManager->Stop();
+	Storage->Stop();
 }
 
 void server::ServerApplication::ProcessCommandResult(ConnectionId connectionId, const CommandResult& result)
