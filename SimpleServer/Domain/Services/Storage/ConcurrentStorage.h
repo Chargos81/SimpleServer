@@ -4,6 +4,8 @@
 #include <optional>
 #include <concurrent_unordered_map.h>
 
+#include "PersistentStorage.h"
+
 namespace domain::services
 {
 	/**
@@ -13,12 +15,29 @@ namespace domain::services
 	{
 	public:
 
+		ConcurrentStorage(std::filesystem::path storageFilePath);
+
+		void Run() override;
+		void Stop() override;
+
 		void Store(const models::DataEntry& data) override;
 		std::optional<models::DataEntry> Find(const std::string& key) override;
 
 	private:
-		
-		Concurrency::concurrent_unordered_map<std::string, std::string> DataContainer;
+
+		void PopulateCache(const std::vector<models::DataEntry>& dataContainer);
+
+	private:
+
+		/**
+		 * Represents the cache for fast read access
+		 */
+		Concurrency::concurrent_unordered_map<std::string, std::string> Cache;
+
+		/**
+		 * Represents the long term storage
+		 */
+		storage::PersistentStorage PersistentStorage;
 	};
 
 }

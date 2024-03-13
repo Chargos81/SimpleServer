@@ -17,6 +17,8 @@ namespace domain::services
 	{
 	public:
 
+		virtual void Run() = 0;
+		virtual void Stop() = 0;
 		virtual void Store(const models::DataEntry& data) = 0;
 		virtual std::optional<models::DataEntry> Find(const std::string& key) = 0;
 
