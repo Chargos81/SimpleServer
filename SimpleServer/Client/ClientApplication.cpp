@@ -1,6 +1,5 @@
 ﻿#include "ClientApplication.h"
 
-#include <ctime>
 #include <iostream>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/read_until.hpp>
@@ -22,9 +21,6 @@ Configuration(std::move(configuration))
 
 void client::ClientApplication::Run()
 {
-	//~
-	srand(time(nullptr));
-
 	const auto addr = ip::address::from_string(Configuration.ServerIpAddress);
 	ip::tcp::endpoint ep(addr, Configuration.ServerPort);
 

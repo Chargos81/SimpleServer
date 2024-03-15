@@ -8,6 +8,8 @@
 #include "Network/ServerNetworkManager.h"
 #include "Services/Stats/StatsService.h"
 
+
+// TODO: application shutdown logic when the close event is raised by the OS
 int main(int argc, char** argv)
 {
 	auto storageFilePath = std::filesystem::path(argv[0]).parent_path() / "Data\\config.txt";
