@@ -165,6 +165,5 @@ std::string client::ClientApplication::PrepareSetCommand() const
 	std::uniform_int_distribution<size_t> valuesDistribution(0, size(values) - 1);
 	const std::string randomValue = Configuration.ValuesList[valuesDistribution(Random)];
 
-	std::cout << "Set command\n";
 	return "$set " + randomKey + '=' + randomValue;
 }

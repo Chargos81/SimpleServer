@@ -40,7 +40,7 @@ namespace client
 		/**
 		 * Used to generate random commands
 		 */
-		static inline std::mt19937 Random;
+		static inline std::mt19937 Random = std::mt19937(std::random_device()());
 
 		config::ClientConfiguration Configuration;
 
