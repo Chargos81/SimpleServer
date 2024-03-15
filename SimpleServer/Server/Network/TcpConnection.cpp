@@ -16,18 +16,16 @@ namespace
 {
 	using namespace server::network;
 
-	void ReadGetCommandBody(std::string_view buffer);
-	void ReadSetCommandBody(std::string_view buffer);
+	constexpr auto delimiter = '\0';
 
-
-
-	std::string ResultToString(const CommandResult& result)
+	void SerializeResultToStream(std::ostream& stream, const CommandResult& result)
 	{
-		return result.Key + '=' + result.Value;
+		stream << result.Key << '=' << result.Value << "\nreads=" << result.Reads << "\nwrites=" << result.Writes;
 	}
 }
 
-TcpConnection::TcpConnection(io_context& ioContext, ConnectionId id):
+TcpConnection::TcpConnection(ServerNetworkManager* networkManager, io_context& ioContext, ConnectionId id):
+NetworkManager(networkManager),
 Socket(ioContext),
 Id(id)
 {
@@ -35,92 +33,102 @@ Id(id)
 
 void TcpConnection::Open()
 {
-	constexpr auto delimiter = '\0';
-
-	// Read until we meet the delimiter and then parse the command
-	// TODO: it would be better to move the parsing logic into a separate class
-	// TODO: read deadline
-	async_read_until(Socket, Buffer, delimiter, [&](const boost::system::error_code& ec, size_t count)
-	{
-		if (ec)
-		{
-			// TODO: handle receive errors
-			return;
-		}
-
-		std::string messageString;
-		std::istream stream(&Buffer);
-
-		stream >> messageString;
-
-		ReadCommand(std::string_view(messageString).substr(0, size(messageString) - 1));
-	});
+	AsyncRead();
 }
 
 void TcpConnection::Close()
 {
-	// TODO
+	std::cout << "Connection closed\n";
+
+	if(Socket.is_open())
+	{
+		Socket.close();
+	}
 }
 
 std::shared_ptr<TcpConnection> TcpConnection::Create(
-	io_context& io_context, ConnectionId id)
+	io_context& io_context, ConnectionId id, ServerNetworkManager* networkManager)
 {
-	return std::make_shared<TcpConnection>(io_context, id);
+	return std::make_shared<TcpConnection>(networkManager, io_context, id);
 }
 
 void TcpConnection::Send(const CommandResult& commandResult)
 {
-	Send(ResultToString(commandResult));
-}
+	std::ostream stream(&SendBuffer);
 
-void TcpConnection::Send(const std::string& messageString)
-{
-	constexpr auto delimiter = '\0';
+	SerializeResultToStream(stream, commandResult);
 
-	streambuf buff(size(messageString) + sizeof delimiter);
-	std::ostream stream(&buff);
+	stream << delimiter;
 
-	stream << messageString << delimiter;
-
-	async_write(Socket, buff, [&](const boost::system::error_code& ec, size_t count)
-	{
-		if(ec)
+	async_write(Socket, SendBuffer, [&](const boost::system::error_code& ec, size_t count)
 		{
-			// TODO: handle write errors
-		}
+			if (ec)
+			{
+				// TODO: handle write errors
+			}
 
-		// ... 
-	});
+			// ... 
+		});
 }
 
-void TcpConnection::ReadCommand(std::string_view buffer)
+void TcpConnection::AsyncRead()
 {
+	// Read until we meet the delimiter and then parse the command
+	// TODO: it would be better to move the parsing logic into a separate class
+	// TODO: read timeouts
+	async_read_until(Socket, ReceiveBuffer, delimiter, [&](const boost::system::error_code& ec, size_t count)
+		{
+			if (ec)
+			{
+				if (ec == error::eof || ec == error::connection_reset)
+				{
+					NetworkManager->CloseConnection(shared_from_this());
+				}
 
+				return;
+			}
+
+			std::istream stream(&ReceiveBuffer);
+
+			std::string messageString;
+			std::getline(stream, messageString, delimiter);
+
+			ProcessCommand(std::string_view(messageString));
+
+			AsyncRead();
+		});
+}
+
+void TcpConnection::ProcessCommand(std::string_view buffer)
+{
+	// TODO: it should be a set of message handlers to process different message types
 	// Get
 	if (const auto pos = buffer.find("$get "); pos != std::string::npos)
 	{
-		ReadGetCommandBody(buffer.substr(pos + 5));
+		ProcessGetCommand(buffer.substr(pos + 5));
 		return;
 	}
 
 	// Set
 	if (const auto pos = buffer.find("$set "); pos != std::string::npos)
 	{
-		ReadSetCommandBody(buffer.substr(pos + 5));
+		ProcessSetCommand(buffer.substr(pos + 5));
 		return;
 	}
 
 	// TODO: treat the message as an invalid one
 }
 
-void TcpConnection::ReadGetCommandBody(std::string_view buffer)
+void TcpConnection::ProcessGetCommand(std::string_view buffer)
 {
 	assert(size(buffer) > 0);
-	GetCommand cmd{ GetId(), std::string(buffer) };
-	//...
+
+	const GetCommand cmd{ GetId(), std::string(buffer) };
+
+	NetworkManager->OnGetCommandReceived(cmd);
 }
 
-void TcpConnection::ReadSetCommandBody(std::string_view buffer)
+void TcpConnection::ProcessSetCommand(std::string_view buffer)
 {
 	assert(size(buffer) > 0);
 
@@ -132,8 +140,9 @@ void TcpConnection::ReadSetCommandBody(std::string_view buffer)
 		Key = buffer.substr(0, delimPos);
 		Value = buffer.substr(delimPos + 1);
 
-		SetCommand cmd(GetId(), Key, Value);
-		// ...
+		const SetCommand cmd(GetId(), Key, Value);
+		
+		NetworkManager->OnSetCommandReceived(cmd);
 		return;
 	}
 

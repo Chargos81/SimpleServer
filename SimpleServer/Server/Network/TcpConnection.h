@@ -7,15 +7,16 @@
 
 namespace server::network
 {
+	class ServerNetworkManager;
 	class CommandResult;
 
 	class TcpConnection : public std::enable_shared_from_this<TcpConnection>
 	{
 	public:
 
-		explicit TcpConnection(boost::asio::io_context& ioContext, ConnectionId id);
+		explicit TcpConnection(ServerNetworkManager* networkManager, boost::asio::io_context& ioContext, ConnectionId id);
 
-		static std::shared_ptr<TcpConnection> Create(boost::asio::io_context& io_context, ConnectionId id);
+		static std::shared_ptr<TcpConnection> Create(boost::asio::io_context& io_context, ConnectionId id, ServerNetworkManager* networkManager);
 
 		void Open();
 		void Close();
@@ -26,17 +27,22 @@ namespace server::network
 
 	private:
 
+		void AsyncRead();
+
 		void Send(const std::string& messageString);
 
-		void ReadCommand(std::string_view buffer);
-		void ReadGetCommandBody(std::string_view buffer);
-		void ReadSetCommandBody(std::string_view buffer);
+		void ProcessCommand(std::string_view buffer);
+		void ProcessGetCommand(std::string_view buffer);
+		void ProcessSetCommand(std::string_view buffer);
 
 	private:
 
-		friend class AsioNetworkManager;
+		friend class ServerNetworkManager;
 
-		boost::asio::streambuf Buffer;
+		ServerNetworkManager* NetworkManager;
+
+		boost::asio::streambuf ReceiveBuffer;
+		boost::asio::streambuf SendBuffer;
 		boost::asio::ip::tcp::socket Socket;
 
 		ConnectionId Id;
