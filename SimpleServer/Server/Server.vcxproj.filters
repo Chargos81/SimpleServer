@@ -53,5 +53,8 @@
     <ClInclude Include="Network\NetworkDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Config\ServerConfiguration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

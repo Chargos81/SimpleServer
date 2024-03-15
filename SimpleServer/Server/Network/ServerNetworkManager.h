@@ -4,6 +4,7 @@
 
 #include "INetworkManager.h"
 #include "TcpConnection.h"
+#include "../Config/ServerConfiguration.h"
 
 namespace server::network
 {
@@ -14,10 +15,13 @@ namespace server::network
 	/**
 	 * A simple single threaded async server
 	 * Runs in separate thread
+	 * TODO: thread safe logging is required
 	 */
 	class ServerNetworkManager : public INetworkManager
 	{
 	public:
+
+		explicit ServerNetworkManager(config::ServerConfiguration configuration) noexcept;
 
 		void Initialize(ServerApplication* application) override;
 
@@ -30,6 +34,8 @@ namespace server::network
 		void OnSetCommandReceived(const SetCommand& command) const;
 
 		void CloseConnection(const std::shared_ptr<TcpConnection>& connection);
+
+		void NotifyConnectionClosed(ConnectionId id);
 
 	private:
 
@@ -44,6 +50,7 @@ namespace server::network
 
 	private:
 
+		config::ServerConfiguration Configuration;
 
 		std::unordered_map<ConnectionId, std::shared_ptr<TcpConnection>> Connections;
 

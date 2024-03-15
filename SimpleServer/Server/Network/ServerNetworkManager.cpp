@@ -7,6 +7,11 @@
 
 using namespace boost::asio;
 
+server::network::ServerNetworkManager::ServerNetworkManager(config::ServerConfiguration configuration) noexcept:
+Configuration(configuration)
+{
+}
+
 void server::network::ServerNetworkManager::Initialize(ServerApplication* application)
 {
 	Application = application;
@@ -55,8 +60,12 @@ void server::network::ServerNetworkManager::OnSetCommandReceived(const SetComman
 
 void server::network::ServerNetworkManager::CloseConnection(const std::shared_ptr<TcpConnection>& connection)
 {
-	Connections.erase(connection->GetId());
 	connection->Close();
+}
+
+void server::network::ServerNetworkManager::NotifyConnectionClosed(ConnectionId id)
+{
+	Connections.erase(id);
 }
 
 void server::network::ServerNetworkManager::RunAsioServer()
@@ -73,21 +82,25 @@ void server::network::ServerNetworkManager::RunAsioServer()
 
 void server::network::ServerNetworkManager::Run()
 {
+	// TODO: handle invalid configuration values
+
 	IsInitialized = true;
 
-	const int32_t port = 7777;
-	const ip::address addr = ip::address::from_string("127.0.0.1");
+	const ip::address addr = ip::address::from_string(Configuration.ListenIp);
 
-	const auto ep = ip::tcp::endpoint(addr, port);
+	const auto ep = ip::tcp::endpoint(addr, Configuration.ListenPort);
 
 	Acceptor = std::make_unique<ip::tcp::acceptor>(IOService, ep);
 
 	StartAccept();
 
-	for (size_t i = 0; i < ThreadsNum; i++)
+	for (size_t i = 0; i < Configuration.WorkerThreadsPoolSize; i++)
 	{
 		WorkerThreads.emplace_back(&ServerNetworkManager::RunAsioServer, this);
 	}
+
+	std::cout << "Listening on: " << Configuration.ListenIp << ":" << Configuration.ListenPort << '\n';
+	std::cout << "Thread pool size: " << Configuration.WorkerThreadsPoolSize << '\n';
 
 }
 
@@ -105,7 +118,7 @@ void server::network::ServerNetworkManager::OnAccept(const std::shared_ptr<TcpCo
 {
 	// It would be better to have some kind of connection factory
 
-	std::cout << "Accepted a new connection\n";
+	std::cout << "Accepted a new connection from " <<  conn->Socket.remote_endpoint() << '\n';
 
 	Connections[conn->GetId()] = conn;
 	conn->Open();
