@@ -15,7 +15,7 @@ namespace server::network
 	 * A simple single threaded async server
 	 * Runs in separate thread
 	 */
-	class AsioNetworkManager : public INetworkManager
+	class ServerNetworkManager : public INetworkManager
 	{
 	public:
 
@@ -29,9 +29,11 @@ namespace server::network
 		void OnGetCommandReceived(const GetCommand& command) const;
 		void OnSetCommandReceived(const SetCommand& command) const;
 
+		void CloseConnection(const std::shared_ptr<TcpConnection>& connection);
+
 	private:
 
-		void StartAsioServer();
+		void RunAsioServer();
 
 		void StartAccept();
 		void OnAccept(const std::shared_ptr<TcpConnection>& conn);
@@ -45,13 +47,14 @@ namespace server::network
 
 		std::unordered_map<ConnectionId, std::shared_ptr<TcpConnection>> Connections;
 
-		std::unique_ptr<std::thread> WorkingThread;
-
 		boost::asio::io_service IOService;
 
 		std::unique_ptr<boost::asio::ip::tcp::acceptor> Acceptor;
 
 		ServerApplication* Application = nullptr;
+
+		std::vector<std::thread> WorkerThreads;
+		size_t ThreadsNum = 4;
 
 		bool IsInitialized = false;
 	};

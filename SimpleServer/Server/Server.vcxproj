@@ -110,7 +110,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"$(BOOST_ROOT)\stage\lib";</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,11 +129,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"$(BOOST_ROOT)\stage\lib";</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Network\AsioNetworkManager.cpp" />
+    <ClCompile Include="Network\ServerNetworkManager.cpp" />
     <ClCompile Include="Network\TcpConnection.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerApplication.cpp" />
@@ -144,7 +144,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Network\AsioNetworkManager.h" />
+    <ClInclude Include="Network\ServerNetworkManager.h" />
     <ClInclude Include="Network\CommandResult.h" />
     <ClInclude Include="Network\GetCommand.h" />
     <ClInclude Include="Network\INetworkManager.h" />

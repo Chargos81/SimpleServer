@@ -21,7 +21,7 @@
     <ClCompile Include="ServerApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Network\AsioNetworkManager.cpp">
+    <ClCompile Include="Network\ServerNetworkManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Network\TcpConnection.cpp">
@@ -38,7 +38,7 @@
     <ClInclude Include="Network\CommandResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Network\AsioNetworkManager.h">
+    <ClInclude Include="Network\ServerNetworkManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Network\TcpConnection.h">
