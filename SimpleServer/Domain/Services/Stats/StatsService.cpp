@@ -10,6 +10,12 @@ void domain::services::StatsService::Run()
 
 void domain::services::StatsService::Stop()
 {
+	{
+		std::lock_guard lock(Mu);
+		IsStopRequested = true;
+		CV.notify_one();
+	}
+
 	if(StatsThread && StatsThread->joinable())
 	{
 		StatsThread->join();
@@ -36,26 +42,34 @@ domain::models::DataEntryStats domain::services::StatsService::UpdateWrites(cons
 
 void domain::services::StatsService::PrintStats()
 {
-	size_t recentReads = 0;
-	size_t recentWrites = 0;
 
-	while(true)
+	while(!IsStopRequested)
 	{
-		std::this_thread::sleep_for(StatsPrintInterval);
+		std::unique_lock lock(Mu);
 
-		{
-			recentReads = RecentReads;
-			recentWrites = RecentWrites;
+		CV.wait_for(lock, StatsPrintInterval, [&] {return ShouldPrintStats(); });
 
-			RecentReads = 0;
-			RecentWrites = 0;
-		}
+		LastStatsPrintTimestamp = std::chrono::steady_clock::now();
+
+
+		const size_t recentReads = RecentReads;
+		const size_t recentWrites = RecentWrites;
+
+		RecentReads = 0;
+		RecentWrites = 0;
 
 		TotalReads += recentReads;
 		TotalWrites += recentWrites;
 
 		std::cout << "******\n";
-		std::cout << "Total stats:\n\tReads: " << TotalReads << "\n\tWrites: " << TotalWrites << "\n\0";
-		std::cout << "Recent stats (last " << StatsPrintInterval.count() << " seconds):\n\tReads: " << recentReads << "\n\tWrites: " << recentWrites << "\n\0";
+		std::cout << "Total stats:\n\tReads: " << TotalReads << "\n\tWrites: " << TotalWrites << "\n";
+		std::cout << "Recent stats (last " << StatsPrintInterval.count() << " seconds):\n\tReads: " << recentReads << "\n\tWrites: " << recentWrites << "\n";
 	}
+}
+
+bool domain::services::StatsService::ShouldPrintStats() const
+{
+	const auto now = std::chrono::steady_clock::now();
+
+	return std::chrono::duration_cast<std::chrono::seconds>(now - LastStatsPrintTimestamp) >= StatsPrintInterval;
 }

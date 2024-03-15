@@ -2,6 +2,7 @@
 #include "IStatsService.h"
 
 #include <concurrent_unordered_map.h>
+#include <condition_variable>
 #include <thread>
 
 namespace domain::services
@@ -19,6 +20,7 @@ namespace domain::services
 	private:
 
 		void PrintStats();
+		bool ShouldPrintStats() const;
 
 	private:
 
@@ -33,5 +35,10 @@ namespace domain::services
 		std::unique_ptr<std::thread> StatsThread;
 
 		std::chrono::seconds StatsPrintInterval {5};
+		std::chrono::steady_clock::time_point LastStatsPrintTimestamp = std::chrono::steady_clock::now();
+
+		std::condition_variable CV;
+		std::mutex Mu;
+		bool IsStopRequested = false;
 	};
 }
