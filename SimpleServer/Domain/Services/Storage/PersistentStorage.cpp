@@ -34,8 +34,10 @@ void domain::services::storage::PersistentStorage::Stop()
 		CV.notify_one();
 	}
 
-	WorkingThread->join();
-
+	if(WorkingThread && WorkingThread->joinable())
+	{
+		WorkingThread->join();
+	}
 }
 
 void domain::services::storage::PersistentStorage::Store(const models::DataEntry& data)
@@ -90,8 +92,8 @@ void domain::services::storage::PersistentStorage::ProcessData()
 			fs.open(FilePath, std::fstream::out);
 
 			// Find the data entry in the json and update it
-			auto obj = Data.as_object();
-			obj[data.Key] = data.Value;
+			auto& obj = Data.as_object();
+			obj[data.Key] =  data.Value;
 
 			const auto jsonString = serialize(Data);
 			fs << jsonString;
@@ -112,26 +114,30 @@ void domain::services::storage::PersistentStorage::LoadData()
 	{
 		if(!exists(FilePath))
 		{
-			std::cout << "File doesnt exist";
+			std::cout << "File does not exist";
 		}
 
 		// Assuming that the write operations are quite seldom
 		std::fstream fs;
 		fs.open(FilePath, std::fstream::in);
 
-		// Parse all the data into the json container
-		Data = parse(fs);
+		// Load the data if any
+		if (fs.peek() != std::ifstream::traits_type::eof())
+		{
+			Data = parse(fs);
+		}
+		else
+		{
+			Data = object();
+		}
 
 		fs.close();
 	}
-	catch (const boost::exception& e)
+	catch (const boost::system::system_error& e)
 	{
-		std::cout << diagnostic_information(e);
-
 		// TODO: handle the json parsing and file opening errors
-	}
-	catch(const std::exception& e)
-	{
-		
+		std::cout << "The data file provided is an invalid json. Please, provide the correct one.\n";
+
+		throw(e);
 	}
 }
