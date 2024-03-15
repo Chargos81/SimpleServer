@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <memory>
+#include <mutex>
 
 #include "Network/GetCommand.h"
 #include "Network/SetCommand.h"
@@ -46,7 +47,9 @@ namespace server
 		std::unique_ptr<network::INetworkManager> NetworkManager;
 		std::unique_ptr<domain::services::IStatsService> Stats;
 
-		std::atomic_bool IsStopRequested = false;
+		std::mutex Mu;
+		std::condition_variable CV;
+		bool IsStopRequested = false;
 	};
 }
 

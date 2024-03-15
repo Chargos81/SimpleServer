@@ -28,10 +28,12 @@ void server::ServerApplication::Run()
 		Storage->Run();
 		Stats->Run();
 
-		while(!IsStopRequested)
-		{
-			std::this_thread::sleep_for(std::chrono::seconds(60));
-		}
+		std::unique_lock lock(Mu);
+		CV.wait(lock, [&] {return IsStopRequested; });
+
+		NetworkManager->Stop();
+		Storage->Stop();
+		Stats->Stop();
 	}
 	catch (const std::exception& e)
 	{
@@ -43,11 +45,9 @@ void server::ServerApplication::Run()
 
 void server::ServerApplication::Stop()
 {
+	std::lock_guard lock(Mu);
 	IsStopRequested = true;
-
-	NetworkManager->Stop();
-	Storage->Stop();
-	Stats->Stop();
+	CV.notify_one();
 }
 
 void server::ServerApplication::ProcessCommandResult(ConnectionId connectionId, const CommandResult& result)
