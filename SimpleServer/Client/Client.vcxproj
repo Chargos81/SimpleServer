@@ -133,16 +133,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Network\ClientNetworkManager.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientApplication.cpp" />
-    <ClCompile Include="Network\INetworkManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config\ClientConfiguration.h" />
-    <ClInclude Include="Network\ClientNetworkManager.h" />
     <ClInclude Include="ClientApplication.h" />
-    <ClInclude Include="Network\INetworkManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "ClientApplication.h"
-#include "Network/ClientNetworkManager.h"
 
 int main()
 {
@@ -18,7 +17,6 @@ int main()
     config.RequestCount = 10'000;
 
 
-    auto networkManager = std::make_unique<client::network::ClientNetworkManager>();
     auto client = client::ClientApplication(config);
 
     client.Run();
