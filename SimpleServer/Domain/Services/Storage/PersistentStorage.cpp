@@ -16,6 +16,8 @@ void domain::services::storage::PersistentStorage::Run()
 {
 	if (IsWorking) return;
 
+	std::cout << "Persistent storage path: " << FilePath.lexically_normal() << '\n';
+
 	LoadData();
 
 	IsWorking = true;
@@ -136,7 +138,7 @@ void domain::services::storage::PersistentStorage::LoadData()
 	catch (const boost::system::system_error& e)
 	{
 		// TODO: handle the json parsing and file opening errors
-		std::cout << "The data file provided is an invalid json. Please, provide the correct one.\n";
+		std::cout << "The data file provided is an invalid json file. Please, provide the correct one.\n";
 
 		throw(e);
 	}
