@@ -4,6 +4,7 @@
 
 #include "ClientApplication.h"
 
+
 int main()
 {
     const auto start = std::chrono::steady_clock::now();
@@ -15,6 +16,7 @@ int main()
     config.ServerIpAddress = "127.0.0.1";
     config.ServerPort = 7777;
     config.RequestCount = 10'000;
+    config.MaxReconnectTries = 20;
 
 
     auto client = client::ClientApplication(config);

@@ -15,5 +15,7 @@ namespace client::config
 		uint16_t ServerPort = 0;
 
 		size_t RequestCount = 0;
+
+		size_t MaxReconnectTries = 0;
 	};
 }

@@ -21,11 +21,25 @@ Configuration(std::move(configuration))
 
 void client::ClientApplication::Run()
 {
-	const auto addr = ip::address::from_string(Configuration.ServerIpAddress);
-	ip::tcp::endpoint ep(addr, Configuration.ServerPort);
-
 	Sock = std::make_unique<ip::tcp::socket>(IOContext);
 	auto DummyWork = std::make_shared<io_service::work>(IOContext);
+
+	Connect();
+
+	IOContext.run();
+}
+
+void client::ClientApplication::Stop()
+{
+	std::cout << "Client - shutdown\n";
+
+	IOContext.stop();
+}
+
+void client::ClientApplication::Connect()
+{
+	const auto addr = ip::address::from_string(Configuration.ServerIpAddress);
+	ip::tcp::endpoint ep(addr, Configuration.ServerPort);
 
 	Sock->async_connect(ep, [&](const boost::system::error_code& ec)
 		{
@@ -39,27 +53,32 @@ void client::ClientApplication::Run()
 			{
 				std::cout << "Successfully connected to the server.\n";
 
+				ReconnectTries = 0;
+
 				SendCommandAsync();
 			}
 		});
-
-	IOContext.run();
-}
-
-void client::ClientApplication::Stop()
-{
-	IOContext.stop();
 }
 
 void client::ClientApplication::OnDisconnected()
 {
-	std::cout << "The client was disconnected from the server\n";
+	Sock->close();
 
 	Reconnect();
 }
 
 void client::ClientApplication::Reconnect()
 {
+	ReconnectTries++;
+	if(ReconnectTries > Configuration.MaxReconnectTries)
+	{
+		Stop();
+		return;
+	}
+
+	std::cout << "Trying to restore the connection " << ReconnectTries << '/' << Configuration.MaxReconnectTries << "...\n";
+
+	Connect();
 }
 
 void client::ClientApplication::SendCommandAsync()

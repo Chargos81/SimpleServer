@@ -23,6 +23,8 @@ namespace client
 
 	private:
 
+		void Connect();
+
 		void OnDisconnected();
 		void Reconnect();
 
@@ -49,6 +51,7 @@ namespace client
 		boost::asio::streambuf ReceiveBuffer;
 
 		size_t ResultsReceived = 0;
+		size_t ReconnectTries = 0;
 	};
 }
 
