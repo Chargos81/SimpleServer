@@ -38,7 +38,9 @@ void TcpConnection::Open()
 
 void TcpConnection::Close()
 {
-	std::cout << "Connection closed\n";
+	std::cout << "Connection #" << GetId() << " was closed\n";
+
+	NetworkManager->NotifyConnectionClosed(GetId());
 
 	if(Socket.is_open())
 	{
@@ -71,6 +73,8 @@ void TcpConnection::Send(const CommandResult& commandResult)
 		});
 }
 
+
+
 void TcpConnection::AsyncRead()
 {
 	// Read until we meet the delimiter and then parse the command
@@ -101,7 +105,7 @@ void TcpConnection::AsyncRead()
 
 void TcpConnection::ProcessCommand(std::string_view buffer)
 {
-	// TODO: it should be a set of message handlers to process different message types
+	// TODO: it should be a set of message handlers for different message types
 	// Get
 	if (const auto pos = buffer.find("$get "); pos != std::string::npos)
 	{
@@ -116,7 +120,8 @@ void TcpConnection::ProcessCommand(std::string_view buffer)
 		return;
 	}
 
-	// TODO: treat the message as an invalid one
+	// TODO: treat the message as an invalid one and notify the client side
+	Close();
 }
 
 void TcpConnection::ProcessGetCommand(std::string_view buffer)
@@ -146,5 +151,6 @@ void TcpConnection::ProcessSetCommand(std::string_view buffer)
 		return;
 	}
 
-	// TODO: treat the message as invalid one
+	// TODO: treat the message as an invalid one and notify the client side
+	Close();
 }
