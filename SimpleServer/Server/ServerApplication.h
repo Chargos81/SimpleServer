@@ -8,6 +8,7 @@
 #include "Network/CommandResult.h"
 #include "Network/INetworkManager.h"
 #include "Network/NetworkDefines.h"
+#include "Services/Stats/IStatsService.h"
 #include "Services/Storage/IStorageService.h"
 
 
@@ -22,7 +23,8 @@ namespace server
 	{
 	public:
 
-		explicit ServerApplication(std::unique_ptr<domain::services::IStorageService> storage, std::unique_ptr<network::INetworkManager> networkManager) noexcept;
+		explicit ServerApplication(std::unique_ptr<domain::services::IStorageService> storage, std::unique_ptr<network::INetworkManager> networkManager,
+			std::unique_ptr<domain::services::IStatsService> stats) noexcept;
 
 		void Run();
 		void Stop();
@@ -42,8 +44,9 @@ namespace server
 
 		std::unique_ptr<domain::services::IStorageService> Storage;
 		std::unique_ptr<network::INetworkManager> NetworkManager;
+		std::unique_ptr<domain::services::IStatsService> Stats;
 
 		std::atomic_bool IsStopRequested = false;
-	}; 
+	};
 }
 

@@ -33,6 +33,15 @@
     <ClInclude Include="Services\Storage\PersistentStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Services\Stats\IStatsService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\DataEntryStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\Stats\StatsService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -42,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Services\Storage\PersistentStorage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Services\Stats\StatsService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
