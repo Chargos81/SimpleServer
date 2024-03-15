@@ -1,20 +1,35 @@
 // Client.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
 #include <iostream>
+
+#include "ClientApplication.h"
+#include "Network/ClientNetworkManager.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    const auto start = std::chrono::steady_clock::now();
+
+    auto config = client::config::ClientConfiguration();
+
+    config.KeysList = { "tree", "house", "cat", "car", "chair" };
+    config.ValuesList = { "blue", "red", "yellow", "green", "magenta", "white", "black" };
+    config.ServerIpAddress = "127.0.0.1";
+    config.ServerPort = 7777;
+    config.RequestCount = 10'000;
+
+
+    auto networkManager = std::make_unique<client::network::ClientNetworkManager>();
+    auto client = client::ClientApplication(config);
+
+    client.Run();
+
+
+    const auto end = std::chrono::steady_clock::now();
+    const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    std::cout << "Time passed: " << duration << "ms\n";
+
+    int x;
+
+    std::cin >> x;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
